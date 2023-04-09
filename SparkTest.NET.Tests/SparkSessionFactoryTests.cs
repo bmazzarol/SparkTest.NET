@@ -12,7 +12,7 @@ using Xunit;
 using static SparkTest.NET.SparkSessionFactory;
 using Scenario = BunsenBurner.Scenario<BunsenBurner.Syntax.Aaa>;
 
-namespace SparkTest.NET.Test
+namespace SparkTest.NET.Tests
 {
     [UsesVerify]
     public static class SparkSessionFactoryTests
