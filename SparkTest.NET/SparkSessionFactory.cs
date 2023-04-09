@@ -1,78 +1,123 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.Spark.Sql;
 
 namespace SparkTest.NET;
+
+using SparkSessions = Dictionary<string, SparkSession>;
 
 /// <summary>
 /// Provides access to spark sessions backed by a running spark-debug process.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[SuppressMessage("Minor Code Smell", "S3963:\"static\" fields should be initialized inline")]
 public static class SparkSessionFactory
 {
-    private static readonly ConcurrentDictionary<string, Lazy<SparkSession>> SparkSessions;
+    private static readonly object Lock = new();
 
-    /// <summary>
-    /// Singleton shared spark session
-    /// </summary>
-    public static readonly SparkSession DefaultSession;
+    private static SparkSessions? _sparkSessions;
+    private static SparkSession? _defaultSession;
 
-    static SparkSessionFactory()
+    private static SparkSessions Initialize(Assembly callingAssembly)
     {
-        SparkSessions = new ConcurrentDictionary<string, Lazy<SparkSession>>(
-            StringComparer.CurrentCultureIgnoreCase
-        );
-        // start the spark-debug process
-        var process = TryStartSparkDebug();
-        // set default session
-        DefaultSession = GetOrCreateSession(nameof(SparkSessionFactory));
-        // shutdown hook
-        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+        if (_sparkSessions != null && _defaultSession != null)
+            return _sparkSessions;
+
+        lock (Lock)
         {
-            foreach (var kvp in SparkSessions.Where(x => x.Value.IsValueCreated))
-                kvp.Value.Value.Stop();
+            _sparkSessions = new SparkSessions(StringComparer.CurrentCultureIgnoreCase);
 
-            if (process == null)
-                return;
+            // get the metadata from the calling assembly
+            var metadata = callingAssembly
+                .GetCustomAttributes(typeof(AssemblyMetadataAttribute))
+                .OfType<AssemblyMetadataAttribute>();
 
-            // CSparkRunner will exit upon receiving newline from
-            // the standard input stream.
-            process.StandardInput.WriteLine("done");
-            process.StandardInput.Flush();
-            process.WaitForExit();
-        };
+            // start the spark-debug process
+            var process = TryStartSparkDebug(metadata);
+
+            // set default session
+            _defaultSession = GetOrCreate(nameof(_defaultSession));
+            _sparkSessions[nameof(_defaultSession)] = _defaultSession;
+
+            // shutdown hook
+            AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+            {
+                foreach (var kvp in _sparkSessions)
+                    kvp.Value.Stop();
+
+                if (process == null)
+                    return;
+
+                // CSparkRunner will exit upon receiving newline from
+                // the standard input stream.
+                process.StandardInput.WriteLine("done");
+                process.StandardInput.Flush();
+                process.WaitForExit();
+            };
+
+            return _sparkSessions;
+        }
     }
 
     /// <summary>
-    /// Gets or creates a new session
+    /// Uses a spark session and returns the result
     /// </summary>
-    /// <param name="appName">application name</param>
-    /// <returns>spark session</returns>
-    public static SparkSession GetOrCreateSession(string appName) =>
-        SparkSessions
-            .GetOrAdd(
-                appName,
-                _ =>
-                    new Lazy<SparkSession>(
-                        () =>
-                            SparkSession
-                                .Builder()
-                                .Config("spark.sql.session.timeZone", "UTC")
-                                .Config("spark.ui.enabled", false)
-                                .Config("spark.ui.showConsoleProgress", false)
-                                .AppName(appName)
-                                .GetOrCreate()
-                    )
-            )
-            .Value;
+    /// <param name="fn">function that takes a session and returns a T</param>
+    /// <param name="appName">optional app name</param>
+    /// <typeparam name="T">some T</typeparam>
+    /// <returns>T</returns>
+    public static Task<T> UseSession<T>(Func<SparkSession, Task<T>> fn, string? appName = default)
+    {
+        lock (Lock)
+        {
+            return fn(GetOrCreateSession(appName, Assembly.GetCallingAssembly()));
+        }
+    }
 
-    private static Process? TryStartSparkDebug()
+    /// <summary>
+    /// Uses a spark session and returns the result
+    /// </summary>
+    /// <param name="fn">function that takes a session and returns a T</param>
+    /// <param name="appName">optional app name</param>
+    /// <typeparam name="T">some T</typeparam>
+    /// <returns>T</returns>
+    public static T UseSession<T>(Func<SparkSession, T> fn, string? appName = default)
+    {
+        lock (Lock)
+        {
+            return fn(GetOrCreateSession(appName, Assembly.GetCallingAssembly()));
+        }
+    }
+
+    private static SparkSession GetOrCreateSession(string? appName, Assembly callingAssembly)
+    {
+        var key = appName ?? nameof(_defaultSession);
+        var sessions = Initialize(callingAssembly);
+
+        if (sessions.TryGetValue(key, out var session))
+            return session;
+
+        session = GetOrCreate(appName);
+        sessions[key] = session;
+        return session;
+    }
+
+    private static SparkSession GetOrCreate(string? appName) =>
+        SparkSession
+            .Builder()
+            .Config("spark.sql.session.timeZone", "UTC")
+            .Config("spark.ui.enabled", false)
+            .Config("spark.ui.showConsoleProgress", false)
+            .AppName(appName)
+            .GetOrCreate();
+
+    private static Process? TryStartSparkDebug(IEnumerable<AssemblyMetadataAttribute> metadata)
     {
         // if we are running in a CI env dont try start spark-submit
         if (
@@ -89,7 +134,7 @@ public static class SparkSessionFactory
         // if the user already has spark running lets not try and start it
         try
         {
-            _ = GetOrCreateSession("test");
+            _ = GetOrCreate("test");
             return null;
         }
         catch
@@ -97,36 +142,9 @@ public static class SparkSessionFactory
             // no-op
         }
 
-        if (
-            !(
-                Environment.GetEnvironmentVariable("SPARK_HOME") is { } sparkHome
-                && !string.IsNullOrEmpty(sparkHome)
-            )
-        )
-        {
-            throw new InvalidOperationException("Environment variable 'SPARK_HOME' must be set.");
-        }
-
-        if (
-            !(
-                Environment.GetEnvironmentVariable("DOTNET_WORKER_DIR") is { } dotnetWorkerDir
-                && !string.IsNullOrEmpty(dotnetWorkerDir)
-            )
-        )
-        {
-            throw new InvalidOperationException(
-                "Environment variable 'DOTNET_WORKER_DIR' must be set."
-            );
-        }
-
-        return Process(
-            sparkHome,
-            Environment.GetEnvironmentVariable("SPARK_DOTNET_JAR_NAME")
-                ?? throw new InvalidOperationException(
-                    "SPARK_DOTNET_JAR_NAME environment variable is not set. This drives what version of spark dotnet is used with spark-debug"
-                ),
-            Environment.GetEnvironmentVariable("SPARK_DEBUG_EXTRA_JARS")
-        );
+        // load the assembly attribute if its set
+        var config = new SparkSessionFactoryConfig(metadata);
+        return Process(config.SparkHome, config.SparkDotnetJarName, config.ExtraJars);
     }
 
     private static Process Process(string sparkHome, string sparkJarName, string? extraJars)
@@ -159,7 +177,7 @@ public static class SparkSessionFactory
         process.StartInfo.RedirectStandardError = true;
 
         var isSparkReady = false;
-        process.OutputDataReceived += (sender, arguments) =>
+        process.OutputDataReceived += (_, arguments) =>
         {
             // Scala-side driver for .NET emits the following message after it is
             // launched and ready to accept connections.
