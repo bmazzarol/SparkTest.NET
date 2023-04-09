@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkTest.NET", "SparkTest.NET\SparkTest.NET.csproj", "{70DC3D58-6BDC-4E1D-8071-7263FEEFB779}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkTest.NET.Test", "SparkTest.NET.Test\SparkTest.NET.Test.csproj", "{EAE369D3-8698-4C6A-BB0D-A67767EA0E87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkTest.NET.Tests", "SparkTest.NET.Tests\SparkTest.NET.Tests.csproj", "{EAE369D3-8698-4C6A-BB0D-A67767EA0E87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
