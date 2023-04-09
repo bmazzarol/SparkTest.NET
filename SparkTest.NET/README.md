@@ -6,7 +6,7 @@
 
 [![Nuget](https://img.shields.io/nuget/v/SparkTest.NET)](https://www.nuget.org/packages/SparkTest.NET/)
 
-Support for testing :test_tube: Spark dotnet applications
+Support for testing Spark dotnet applications
 
 ## Features
 

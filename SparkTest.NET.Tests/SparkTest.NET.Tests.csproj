@@ -29,7 +29,7 @@
 
     <ItemGroup>
         <!-- Example of config for SparkTest.NET-->
-        <AssemblyMetadata Include="SparkTest.NETExtraJars" Value="test.jar"/>
+        <AssemblyMetadata Include="SparkTest.NET.ExtraJars" Value="test.jar"/>
         <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"/>
     </ItemGroup>
 </Project>
