@@ -8,6 +8,9 @@ using Microsoft.Spark.Sql.Types;
 
 namespace SparkTest.NET.Extensions;
 
+/// <summary>
+/// Extension methods for working with data frames
+/// </summary>
 public static class DataFrameExtensions
 {
     /// <summary>
@@ -79,6 +82,7 @@ public static class DataFrameExtensions
     /// <summary>
     /// Creates a struct type from a given T
     /// </summary>
+    /// <param name="_">instance of T</param>
     /// <param name="serializable">flag to indicate that all fields of the struct must be serializable from .NET to Java</param>
     /// <typeparam name="T">some T</typeparam>
     /// <returns>struct type</returns>

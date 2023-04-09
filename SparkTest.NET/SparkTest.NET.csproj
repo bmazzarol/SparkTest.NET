@@ -1,13 +1,43 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Authors>Ben Mazzarol,Cheranga Hatangala</Authors>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>SparkTest.NET</PackageId>
+        <Title>SparkTest.NET</Title>
+        <Description>Support for testing Spark dotnet applications</Description>
+        <PackageTags>Spark, C#, Test, Unit Tests, Integration Tests</PackageTags>
+        <PackageProjectUrl>https://github.com/bmazzarol/SparkTest.NET</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) Ben Mazzarol. All rights reserved.</Copyright>
+        <ProjectGuid>7785ca26-4a1d-42cb-acb1-d8de50fa9646</ProjectGuid>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IsPackable>True</IsPackable>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>test-tubes-icon.png</PackageIcon>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <AnalysisMode>Recommended</AnalysisMode>
         <Nullable>enable</Nullable>
+        <OutputType>library</OutputType>
     </PropertyGroup>
-
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+        <None Include="..\test-tubes-icon.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    </ItemGroup>
+    
     <ItemGroup>
         <PackageReference Include="AsyncFixer" Version="1.6.0">
             <PrivateAssets>all</PrivateAssets>
@@ -26,6 +56,11 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+
+    <Target Name="husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
+        <Exec Command="dotnet tool restore" WorkingDirectory="../" />
+        <Exec Command="dotnet husky install" WorkingDirectory="../" />
+    </Target>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Spark" Version="2.1.1" />
