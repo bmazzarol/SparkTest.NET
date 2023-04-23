@@ -1,24 +1,6 @@
-﻿== Parsed Logical Plan ==
-Relation[Id] json
+﻿struct<Id:integer>
 
-== Analyzed Logical Plan ==
-Id: int
-Relation[Id] json
-
-== Optimized Logical Plan ==
-InMemoryRelation [Id], StorageLevel(disk, memory, deserialized, 1 replicas)
-   +- FileScan json [Id] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Id:int>
-
-== Physical Plan ==
-*(1) ColumnarToRow
-+- InMemoryTableScan [Id]
-      +- InMemoryRelation [Id], StorageLevel(disk, memory, deserialized, 1 replicas)
-            +- FileScan json [Id] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Id:int>
-
-== DataFrame Schema ==
-struct<Id:integer>
-
-== DataFrame Data(rows = 20) ==
+(top = 20)
 +---+
 |Id |
 +---+

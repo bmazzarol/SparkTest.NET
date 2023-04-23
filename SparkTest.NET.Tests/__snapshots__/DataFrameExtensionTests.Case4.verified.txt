@@ -1,23 +1,6 @@
-﻿== Parsed Logical Plan ==
-Relation[Map] json
+﻿struct<Map:map<string,integer>>
 
-== Analyzed Logical Plan ==
-Map: map<string,int>
-Relation[Map] json
-
-== Optimized Logical Plan ==
-InMemoryRelation [Map], StorageLevel(disk, memory, deserialized, 1 replicas)
-   +- FileScan json [Map] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
-
-== Physical Plan ==
-InMemoryTableScan [Map]
-   +- InMemoryRelation [Map], StorageLevel(disk, memory, deserialized, 1 replicas)
-         +- FileScan json [Map] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
-
-== DataFrame Schema ==
-struct<Map:map<string,integer>>
-
-== DataFrame Data(rows = 20) ==
+(top = 20)
 +------------------------+
 |Map                     |
 +------------------------+
