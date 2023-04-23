@@ -1,0 +1,9 @@
+﻿struct<Byte:byte,Short:short,Int:integer,Long:long,Float:float,Double:double,Decimal:decimal(10,0),String:string,Char:string,Bool:boolean,Date:date,DateTimeOffset:timestamp,Binary:binary>
+
+(top = 20)
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+
+|Byte|Short|Int|Long|Float|Double|Decimal|String|Char|Bool |Date      |DateTimeOffset            |Binary|
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+
+|1   |1    |1  |1   |1.0  |1.0   |1      |a     |a   |true |0001-01-01|0001-01-01 00:00:00       |[01]  |
+|2   |2    |2  |2   |2.0  |2.0   |2      |b     |b   |false|9999-12-31|9999-12-31 23:59:59.999999|[01]  |
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+
