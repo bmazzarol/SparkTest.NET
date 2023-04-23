@@ -1,0 +1,26 @@
+﻿== Parsed Logical Plan ==
+Relation[Array] json
+
+== Analyzed Logical Plan ==
+Array: array<int>
+Relation[Array] json
+
+== Optimized Logical Plan ==
+InMemoryRelation [Array], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [Array] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Array:array<int>>
+
+== Physical Plan ==
+InMemoryTableScan [Array]
+   +- InMemoryRelation [Array], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [Array] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Array:array<int>>
+
+== DataFrame Schema ==
+struct<Array:array<integer>>
+
+== DataFrame Data(rows = 20) ==
++---------+
+|Array    |
++---------+
+|[1, 2, 3]|
+|[4, 5, 6]|
++---------+

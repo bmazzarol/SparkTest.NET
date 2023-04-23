@@ -64,6 +64,7 @@
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Spark" Version="2.1.1" />
+        <PackageReference Include="System.Text.Json" Version="7.0.2" />
     </ItemGroup>
 
 </Project>

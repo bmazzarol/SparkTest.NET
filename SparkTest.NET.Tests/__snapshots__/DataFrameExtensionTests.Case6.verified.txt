@@ -1,0 +1,26 @@
+﻿== Parsed Logical Plan ==
+Relation[CreatedDate,Person] json
+
+== Analyzed Logical Plan ==
+CreatedDate: timestamp, Person: struct<Name:string,Age:int,Interests:array<struct<Priority:int,Name:string>>>
+Relation[CreatedDate,Person] json
+
+== Optimized Logical Plan ==
+InMemoryRelation [CreatedDate, Person], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [CreatedDate,Person] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
+
+== Physical Plan ==
+InMemoryTableScan [CreatedDate, Person]
+   +- InMemoryRelation [CreatedDate, Person], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [CreatedDate,Person] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
+
+== DataFrame Schema ==
+struct<CreatedDate:timestamp,Person:struct<Name:string,Age:integer,Interests:array<struct<Priority:integer,Name:string>>>>
+
+== DataFrame Data(rows = 20) ==
++-------------------+----------------------------------------+
+|CreatedDate        |Person                                  |
++-------------------+----------------------------------------+
+|0001-01-01 00:00:00|[Billy, 12, [[1, Football], [3, Cars]]] |
+|0001-01-01 00:00:00|[James, 11, [[1, Video Games], [2, TV]]]|
++-------------------+----------------------------------------+

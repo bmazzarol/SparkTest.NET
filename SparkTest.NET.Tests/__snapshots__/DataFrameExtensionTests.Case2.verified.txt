@@ -1,0 +1,26 @@
+﻿== Parsed Logical Plan ==
+Relation[Byte,Short,Int,LongL,Float,Double,Decimal,String,Char,Bool,Date,DateTimeOffset,Binary] json
+
+== Analyzed Logical Plan ==
+Byte: tinyint, Short: smallint, Int: int, Long: bigint, Float: float, Double: double, Decimal: decimal(10,0), String: string, Char: string, Bool: boolean, Date: date, DateTimeOffset: timestamp, Binary: binary
+Relation[Byte,Short,Int,LongL,Float,Double,Decimal,String,Char,Bool,Date,DateTimeOffset,Binary] json
+
+== Optimized Logical Plan ==
+InMemoryRelation [Byte, Short, Int, LongL, Float, Double, Decimal, String, Char, Bool, Date, DateTimeOffset, Binary], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [Byte,Short,Int,LongL,Float,Double,Decimal,String,Char,Bool,Date,DateTimeOffset,Binary] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
+
+== Physical Plan ==
+InMemoryTableScan [Byte, Short, Int, LongL, Float, Double, Decimal, String, Char, Bool, Date, DateTimeOffset, Binary]
+   +- InMemoryRelation [Byte, Short, Int, LongL, Float, Double, Decimal, String, Char, Bool, Date, DateTimeOffset, Binary], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [Byte,Short,Int,LongL,Float,Double,Decimal,String,Char,Bool,Date,DateTimeOffset,Binary] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex[file:/{ProjectDirectory}b..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
+
+== DataFrame Schema ==
+struct<Byte:byte,Short:short,Int:integer,Long:long,Float:float,Double:double,Decimal:decimal(10,0),String:string,Char:string,Bool:boolean,Date:date,DateTimeOffset:timestamp,Binary:binary>
+
+== DataFrame Data(rows = 20) ==
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+
+|Byte|Short|Int|Long|Float|Double|Decimal|String|Char|Bool |Date      |DateTimeOffset            |Binary|
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+
+|1   |1    |1  |1   |1.0  |1.0   |1      |a     |a   |true |0001-01-01|0001-01-01 00:00:00       |[01]  |
+|2   |2    |2  |2   |2.0  |2.0   |2      |b     |b   |false|9999-12-31|9999-12-31 23:59:59.999999|[01]  |
++----+-----+---+----+-----+------+-------+------+----+-----+----------+--------------------------+------+

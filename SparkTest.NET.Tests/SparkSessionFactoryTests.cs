@@ -4,22 +4,17 @@ using System.Threading.Tasks;
 using BunsenBurner;
 using BunsenBurner.Verify.Xunit;
 using FluentAssertions;
-using Microsoft.Spark.Sql;
 using Microsoft.Spark.Sql.Types;
 using SparkTest.NET.Extensions;
 using VerifyXunit;
 using Xunit;
-using static SparkTest.NET.SparkSessionFactory;
-using Scenario = BunsenBurner.Scenario<BunsenBurner.Syntax.Aaa>;
+using static SparkTest.NET.Tests.Shared;
 
 namespace SparkTest.NET.Tests
 {
     [UsesVerify]
     public static class SparkSessionFactoryTests
     {
-        private static Scenario.Arranged<T> ArrangeUsingSpark<T>(Func<SparkSession, T> arrange) =>
-            UseSession(arrange).ArrangeData();
-
         [Fact(DisplayName = "A spark session can be returned and used to query")]
         public static async Task Case1() =>
             await ArrangeUsingSpark(
@@ -83,35 +78,21 @@ namespace SparkTest.NET.Tests
                 }
             }
                 .ArrangeData()
-                .Act(data => data.AsStructType(false).Json)
+                .Act(data => data.AsStructType().Json)
                 .AssertResultIsUnchanged();
-
-        [Fact(DisplayName = "Objects that cannot be serialized from .NET to Java throw")]
-        public static async Task Case5() =>
-            await new { Guid = Guid.NewGuid() }
-                .ArrangeData()
-                .Act(data => data.AsStructType(true))
-                .AssertFailsWith(
-                    (NotSupportedException e) =>
-                        e.Message
-                            .Should()
-                            .Be(
-                                "System.Guid is not supported in Spark or cannot be serialized from .NET to Java at this time"
-                            )
-                );
 
         [Fact(DisplayName = "Nullable objects are supported")]
         public static async Task Case6() =>
             await new { NullableInt = (int?)null }
                 .ArrangeData()
-                .Act(data => data.AsStructType(true).Json)
+                .Act(data => data.AsStructType().Json)
                 .AssertResultIsUnchanged();
 
         [Fact(DisplayName = "Objects that are not supported in Spark throw")]
         public static async Task Case7() =>
             await new { Guid = Guid.NewGuid() }
                 .ArrangeData()
-                .Act(data => data.AsStructType(false))
+                .Act(data => data.AsStructType())
                 .AssertFailsWith(
                     (NotSupportedException e) =>
                         e.Message.Should().Be("System.Guid is not supported in Spark")
