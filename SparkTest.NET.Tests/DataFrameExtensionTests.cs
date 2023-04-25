@@ -69,7 +69,7 @@ namespace SparkTest.NET.Tests
                                 Date = DateTime.MaxValue,
                                 SparkDate = new Date(DateTime.MaxValue),
                                 DateTimeOffset = DateTimeOffset.MaxValue,
-                                Timestamp = new Timestamp(DateTime.MaxValue),
+                                Timestamp = new Timestamp(DateTimeOffset.MaxValue.UtcDateTime),
                                 Binary = new byte[] { 1 },
                                 Enum = LogLevel.Critical
                             }
