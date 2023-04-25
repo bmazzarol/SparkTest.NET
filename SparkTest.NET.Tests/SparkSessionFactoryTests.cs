@@ -30,7 +30,15 @@ namespace SparkTest.NET.Tests
         [Fact(DisplayName = "A spark data frame can be created from a custom type")]
         public static async Task Case2() =>
             await ArrangeUsingSpark(
-                    session => session.CreateDataFrameFromData(new { A = 1, B = "2", C = 3.0 })
+                    session =>
+                        session.CreateDataFrameFromData(
+                            new
+                            {
+                                A = 1,
+                                B = "2",
+                                C = 3.0
+                            }
+                        )
                 )
                 .Act(df => df.Collect())
                 .Assert(rows => rows.Count() == 1)
@@ -60,8 +68,7 @@ namespace SparkTest.NET.Tests
                 .AssertResultIsUnchanged();
 
         [Fact(DisplayName = "Nested objects are supported")]
-        public static async Task Case4() =>
-            await new
+        public static async Task Case4() => await new
             {
                 Id = 1,
                 Details = new
@@ -76,10 +83,7 @@ namespace SparkTest.NET.Tests
                         Float = (float)0.0
                     }
                 }
-            }
-                .ArrangeData()
-                .Act(data => data.AsStructType().Json)
-                .AssertResultIsUnchanged();
+            }.ArrangeData().Act(data => data.AsStructType().Json).AssertResultIsUnchanged();
 
         [Fact(DisplayName = "Nullable objects are supported")]
         public static async Task Case6() =>

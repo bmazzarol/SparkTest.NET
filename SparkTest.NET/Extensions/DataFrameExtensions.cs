@@ -131,7 +131,8 @@ public static class DataFrameExtensions
     /// <returns>struct type</returns>
     /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
     [Pure]
-    public static StructType CreateStructType<T>() where T : class => typeof(T).AsStructType();
+    public static StructType CreateStructType<T>()
+        where T : class => typeof(T).AsStructType();
 
     /// <summary>
     /// Creates a struct type from a given T
@@ -141,7 +142,8 @@ public static class DataFrameExtensions
     /// <returns>struct type</returns>
     /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
     [Pure]
-    public static StructType AsStructType<T>(this T _) where T : class => CreateStructType<T>();
+    public static StructType AsStructType<T>(this T _)
+        where T : class => CreateStructType<T>();
 
     /// <summary>
     /// Creates a struct type from a given Type
@@ -196,7 +198,8 @@ public static class DataFrameExtensions
         this SparkSession session,
         TData first,
         params TData[] rest
-    ) where TData : class => session.CreateDataFrameFromData(rest.Prepend(first));
+    )
+        where TData : class => session.CreateDataFrameFromData(rest.Prepend(first));
 
     /// <summary>
     /// Creates a data frame from a given TData loaded into spark as a JSON file
@@ -211,7 +214,8 @@ public static class DataFrameExtensions
     public static DataFrame CreateDataFrameFromData<TData>(
         this SparkSession session,
         IEnumerable<TData> data
-    ) where TData : class
+    )
+        where TData : class
     {
         var lst = data.ToArray();
         if (lst.Length == 0)
