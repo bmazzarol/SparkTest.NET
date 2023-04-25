@@ -28,8 +28,5 @@ internal class SparkTimestampConverter : JsonConverter<Timestamp>
         Utf8JsonWriter writer,
         Timestamp value,
         JsonSerializerOptions options
-    ) =>
-        writer.WriteStringValue(
-            value.ToDateTime().ToString("O", CultureInfo.InvariantCulture)
-        );
+    ) => writer.WriteStringValue(value.ToDateTime().ToString("O", CultureInfo.InvariantCulture));
 }
