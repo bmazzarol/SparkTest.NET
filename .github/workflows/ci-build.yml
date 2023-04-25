@@ -15,7 +15,7 @@ jobs:
         spark-version:
           - { name: spark-3.2.1, jar: microsoft-spark-3-2_1.12-2.1.1.jar }
       
-      name: ${{ matrix.project-name }} (${{ matrix.spark-version.name }})
+    name: ${{ matrix.project-name }} (${{ matrix.spark-version.name }})
 
     steps:
       - uses: actions/checkout@v3
