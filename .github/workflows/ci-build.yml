@@ -13,7 +13,7 @@ jobs:
         project-name:
           - SparkTest.NET
         spark-version:
-          - { name: spark-3.0.2, jar: microsoft-spark-3-0_2.12-2.1.1.jar }
+          - { name: spark-3.2.1, jar: microsoft-spark-3-2_2.12-2.1.1.jar }
       
     name: ${{ matrix.project-name }} (${{ matrix.spark-version.name }})
 
