@@ -26,6 +26,6 @@ internal class SparkDateConverter : JsonConverter<Date>
 
     public override void Write(Utf8JsonWriter writer, Date value, JsonSerializerOptions options) =>
         writer.WriteStringValue(
-            value.ToDateTime().ToUniversalTime().ToString("O", CultureInfo.InvariantCulture)
+            value.ToDateTime().ToString("O", CultureInfo.InvariantCulture)
         );
 }

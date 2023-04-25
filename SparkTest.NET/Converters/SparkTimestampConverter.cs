@@ -30,6 +30,6 @@ internal class SparkTimestampConverter : JsonConverter<Timestamp>
         JsonSerializerOptions options
     ) =>
         writer.WriteStringValue(
-            value.ToDateTime().ToUniversalTime().ToString("O", CultureInfo.InvariantCulture)
+            value.ToDateTime().ToString("O", CultureInfo.InvariantCulture)
         );
 }
