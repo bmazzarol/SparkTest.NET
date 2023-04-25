@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Spark.Sql;
 using Microsoft.Spark.Sql.Types;
+using SparkTest.NET.Converters;
 
 namespace SparkTest.NET.Extensions;
 
@@ -17,6 +19,17 @@ namespace SparkTest.NET.Extensions;
 /// </summary>
 public static class DataFrameExtensions
 {
+    private static readonly JsonSerializerOptions Options =
+        new()
+        {
+            Converters =
+            {
+                new JsonStringEnumConverter(),
+                new SparkDateConverter(),
+                new SparkTimestampConverter()
+            }
+        };
+
     private static bool IsEnumerable(this Type type, out Type? nestedType)
     {
         var enumerableInterface = Array.Find(
@@ -73,8 +86,15 @@ public static class DataFrameExtensions
                 return new TimestampType();
             }
 
-            if (typeof(string).IsAssignableFrom(type) || typeof(char).IsAssignableFrom(type))
+            if (
+                typeof(string).IsAssignableFrom(type)
+                || typeof(char).IsAssignableFrom(type)
+                || type.IsEnum
+            )
+            {
                 return new StringType();
+            }
+
             if (typeof(byte[]).IsAssignableFrom(type))
                 return new BinaryType();
             if (
@@ -211,7 +231,9 @@ public static class DataFrameExtensions
         using (var fileStream = File.Create(filePath))
         {
             using (var utf8JsonWriter = new Utf8JsonWriter(fileStream))
-                JsonSerializer.Serialize(utf8JsonWriter, lst);
+            {
+                JsonSerializer.Serialize(utf8JsonWriter, lst, Options);
+            }
         }
 
         // load file into spark and cache and force execution

@@ -6,6 +6,8 @@ using BunsenBurner;
 using BunsenBurner.Utility;
 using BunsenBurner.Verify.Xunit;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Spark.Sql.Types;
 using SparkTest.NET.Extensions;
 using VerifyXunit;
 using Xunit;
@@ -46,8 +48,11 @@ namespace SparkTest.NET.Tests
                                 Char = 'a',
                                 Bool = true,
                                 Date = DateTime.MinValue,
+                                SparkDate = new Date(DateTime.MinValue),
                                 DateTimeOffset = DateTimeOffset.MinValue,
-                                Binary = new byte[] { 1 }
+                                Timestamp = new Timestamp(DateTime.MinValue),
+                                Binary = new byte[] { 1 },
+                                Enum = LogLevel.None
                             },
                             new
                             {
@@ -62,8 +67,11 @@ namespace SparkTest.NET.Tests
                                 Char = 'b',
                                 Bool = false,
                                 Date = DateTime.MaxValue,
+                                SparkDate = new Date(DateTime.MaxValue),
                                 DateTimeOffset = DateTimeOffset.MaxValue,
-                                Binary = new byte[] { 1 }
+                                Timestamp = new Timestamp(DateTimeOffset.MaxValue.UtcDateTime),
+                                Binary = new byte[] { 1 },
+                                Enum = LogLevel.Critical
                             }
                         )
                 )
