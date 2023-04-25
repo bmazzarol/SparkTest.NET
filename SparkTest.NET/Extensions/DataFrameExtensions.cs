@@ -86,8 +86,15 @@ public static class DataFrameExtensions
                 return new TimestampType();
             }
 
-            if (typeof(string).IsAssignableFrom(type) || typeof(char).IsAssignableFrom(type) || type.IsEnum)
+            if (
+                typeof(string).IsAssignableFrom(type)
+                || typeof(char).IsAssignableFrom(type)
+                || type.IsEnum
+            )
+            {
                 return new StringType();
+            }
+
             if (typeof(byte[]).IsAssignableFrom(type))
                 return new BinaryType();
             if (
