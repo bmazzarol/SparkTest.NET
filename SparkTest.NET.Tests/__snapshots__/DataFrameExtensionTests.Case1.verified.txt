@@ -1,4 +1,6 @@
-﻿struct<Id:integer>
+﻿root
+ |-- Id: integer (nullable = true)
+
 
 (top = 20)
 +---+

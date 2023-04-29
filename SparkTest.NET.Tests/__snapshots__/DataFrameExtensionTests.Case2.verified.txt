@@ -1,4 +1,21 @@
-﻿struct<Byte:byte,Short:short,Int:integer,Long:long,Float:float,Double:double,Decimal:decimal(10,0),String:string,Char:string,Bool:boolean,Date:date,SparkDate:date,DateTimeOffset:timestamp,Timestamp:timestamp,Binary:binary,Enum:string>
+﻿root
+ |-- Byte: byte (nullable = true)
+ |-- Short: short (nullable = true)
+ |-- Int: integer (nullable = true)
+ |-- Long: long (nullable = true)
+ |-- Float: float (nullable = true)
+ |-- Double: double (nullable = true)
+ |-- Decimal: decimal(10,0) (nullable = true)
+ |-- String: string (nullable = true)
+ |-- Char: string (nullable = true)
+ |-- Bool: boolean (nullable = true)
+ |-- Date: date (nullable = true)
+ |-- SparkDate: date (nullable = true)
+ |-- DateTimeOffset: timestamp (nullable = true)
+ |-- Timestamp: timestamp (nullable = true)
+ |-- Binary: binary (nullable = true)
+ |-- Enum: string (nullable = true)
+
 
 (top = 20)
 +----+-----+---+----+-----+------+-------+------+----+-----+----------+----------+--------------------------+--------------------------+------+--------+
