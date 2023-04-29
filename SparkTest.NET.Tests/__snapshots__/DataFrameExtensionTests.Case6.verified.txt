@@ -1,4 +1,13 @@
-﻿struct<CreatedDate:timestamp,Person:struct<Name:string,Age:integer,Interests:array<struct<Priority:integer,Name:string>>>>
+﻿root
+ |-- CreatedDate: timestamp (nullable = true)
+ |-- Person: struct (nullable = true)
+ |    |-- Name: string (nullable = true)
+ |    |-- Age: integer (nullable = true)
+ |    |-- Interests: array (nullable = true)
+ |    |    |-- element: struct (containsNull = true)
+ |    |    |    |-- Priority: integer (nullable = true)
+ |    |    |    |-- Name: string (nullable = true)
+
 
 (top = 20)
 +-------------------+----------------------------------------+

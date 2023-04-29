@@ -14,7 +14,7 @@ namespace SparkTest.NET;
 using SparkSessions = Dictionary<string, SparkSession>;
 
 /// <summary>
-/// Provides access to spark sessions backed by a running spark-debug process.
+/// Provides access to spark sessions backed by a running spark-debug process
 /// </summary>
 [ExcludeFromCodeCoverage]
 public static class SparkSessionFactory

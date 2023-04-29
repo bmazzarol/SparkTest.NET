@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Spark;
+using Microsoft.Spark.Interop.Ipc;
 using Microsoft.Spark.Sql;
 using Microsoft.Spark.Sql.Types;
 using SparkTest.NET.Converters;
@@ -15,7 +17,7 @@ using SparkTest.NET.Converters;
 namespace SparkTest.NET.Extensions;
 
 /// <summary>
-/// Extension methods for working with data frames
+/// Extension methods for working with the `DataFrame` API
 /// </summary>
 public static class DataFrameExtensions
 {
@@ -50,7 +52,7 @@ public static class DataFrameExtensions
     }
 
     /// <summary>
-    /// Converts a type to its spark type.
+    /// Converts a type to its spark type
     /// </summary>
     /// <param name="type">.NET type</param>
     /// <returns>spark data type</returns>
@@ -173,7 +175,7 @@ public static class DataFrameExtensions
         );
 
     /// <summary>
-    /// Creates an empty data frame
+    /// Creates an empty `DataFrame`
     /// </summary>
     /// <param name="session">spark session</param>
     /// <returns>empty frame</returns>
@@ -185,7 +187,7 @@ public static class DataFrameExtensions
         );
 
     /// <summary>
-    /// Creates a data frame from a given TData loaded into spark as a JSON file
+    /// Creates a `DataFrame` from a given TData loaded into spark as a JSON file
     /// </summary>
     /// <param name="session">session</param>
     /// <param name="first">first data item</param>
@@ -202,7 +204,7 @@ public static class DataFrameExtensions
         where TData : class => session.CreateDataFrameFromData(rest.Prepend(first));
 
     /// <summary>
-    /// Creates a data frame from a given TData loaded into spark as a JSON file
+    /// Creates a `DataFrame` from a given TData loaded into spark as a JSON file
     /// </summary>
     /// <param name="session">session</param>
     /// <param name="data">data</param>
@@ -248,7 +250,7 @@ public static class DataFrameExtensions
     /// <summary>
     /// Displays rows of the `DataFrame` in tabular form
     /// </summary>
-    /// <param name="dataFrame">data frame</param>
+    /// <param name="dataFrame">`DataFrame`</param>
     /// <param name="numRows">number of rows to show</param>
     /// <param name="truncate">
     /// if set to more than 0, truncates strings to `truncate`
@@ -259,6 +261,7 @@ public static class DataFrameExtensions
     /// (one line per column value)
     /// </param>
     /// <returns>row data</returns>
+    [Since("2.4.0")]
     public static string ShowString(
         this DataFrame dataFrame,
         int numRows = 20,
@@ -267,9 +270,18 @@ public static class DataFrameExtensions
     ) => (string)dataFrame.Reference.Invoke("showString", numRows, truncate, vertical);
 
     /// <summary>
-    /// Debugs a provided data frame
+    /// Prints the schema to the console in a nice tree format
     /// </summary>
-    /// <param name="dataFrame">data frame</param>
+    /// <param name="dataFrame">`DataFrame`</param>
+    /// <returns>schema</returns>
+    [Since("2.4.0")]
+    public static string PrintSchemaString(this DataFrame dataFrame) =>
+        (string)((JvmObjectReference)dataFrame.Reference.Invoke("schema")).Invoke("treeString");
+
+    /// <summary>
+    /// Debugs a provided `DataFrame`
+    /// </summary>
+    /// <param name="dataFrame">`DataFrame`</param>
     /// <param name="numRows">number of rows to show</param>
     /// <param name="truncate">
     /// if set to more than 0, truncates strings to `truncate`
@@ -279,12 +291,13 @@ public static class DataFrameExtensions
     /// If set to true, prints output rows vertically
     /// (one line per column value)
     /// </param>
-    /// <returns>data frame debug details</returns>
+    /// <returns>`DataFrame` details</returns>
+    [Since("2.4.0")]
     public static string Debug(
         this DataFrame dataFrame,
         int numRows = 20,
         int truncate = 0,
         bool vertical = false
     ) =>
-        $"{dataFrame.Schema().SimpleString}\n\n(top = {numRows})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
+        $"{dataFrame.PrintSchemaString()}\n\n(top = {numRows})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
 }
