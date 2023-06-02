@@ -67,6 +67,11 @@ public static class DataFrameExtensions
     /// <returns>spark data type</returns>
     /// <exception cref="NotSupportedException">if the type is not supported in spark</exception>
     [SuppressMessage("Design", "MA0051:Method is too long")]
+    [SuppressMessage(
+        "Maintainence",
+        "S3776:Refactor this method to reduce its Cognitive Complexity from 38 to the 15 allowed",
+        Justification = "Splitting this function up would not make it easier to maintain, its recusive by default and also requires unwrapping of nested generics"
+    )]
     public static DataType AsSparkType(this Type type)
     {
         while (true)

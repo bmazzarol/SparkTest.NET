@@ -112,8 +112,8 @@ public static class SparkSessionFactory
         SparkSession
             .Builder()
             .Config("spark.sql.session.timeZone", "UTC")
-            .Config("spark.ui.enabled", false)
-            .Config("spark.ui.showConsoleProgress", false)
+            .Config("spark.ui.enabled", value: false)
+            .Config("spark.ui.showConsoleProgress", value: false)
             .AppName(appName)
             .GetOrCreate();
 
