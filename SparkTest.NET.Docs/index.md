@@ -5,9 +5,6 @@
 
 # SparkTest.NET
 
-[:running: **_Getting Started_**](https://bmazzarol.github.io/SparkTest.NET/articles/getting-started.html)
-[:books: **_Documentation_**](https://bmazzarol.github.io/SparkTest.NET)
-
 [![Nuget](https://img.shields.io/nuget/v/SparkTest.NET)](https://www.nuget.org/packages/SparkTest.NET/)
 [![Coverage Status](https://coveralls.io/repos/github/bmazzarol/SparkTest.NET/badge.svg?branch=main)](https://coveralls.io/github/bmazzarol/SparkTest.NET?branch=main)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bmazzarol_SparkTest.NET&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bmazzarol_SparkTest.NET)
