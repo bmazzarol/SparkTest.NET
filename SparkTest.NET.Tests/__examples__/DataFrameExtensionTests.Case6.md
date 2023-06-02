@@ -26,19 +26,19 @@ root
 
 ```shell
 == Parsed Logical Plan ==
-Relation [CreatedDate#0,Person#1] json
+Relation [CreatedDate#1,Person#2] json
 
 == Analyzed Logical Plan ==
 CreatedDate: timestamp, Person: struct<Name:string,Age:int,Interests:array<struct<Priority:int,Name:string>>>
-Relation [CreatedDate#0,Person#1] json
+Relation [CreatedDate#1,Person#2] json
 
 == Optimized Logical Plan ==
-InMemoryRelation [CreatedDate#0, Person#1], StorageLevel(disk, memory, deserialized, 1 replicas)
-   +- FileScan json [CreatedDate#0,Person#1] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
+InMemoryRelation [CreatedDate#1, Person#2], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [CreatedDate#1,Person#2] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
 
 == Physical Plan ==
-InMemoryTableScan [CreatedDate#0, Person#1]
-   +- InMemoryRelation [CreatedDate#0, Person#1], StorageLevel(disk, memory, deserialized, 1 replicas)
-         +- FileScan json [CreatedDate#0,Person#1] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
+InMemoryTableScan [CreatedDate#1, Person#2]
+   +- InMemoryRelation [CreatedDate#1, Person#2], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [CreatedDate#1,Person#2] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CreatedDate:timestamp,Person:struct<Name:string,Age:int,Interests:array<struct<Priority:in...
 
 ```
