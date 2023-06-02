@@ -8,7 +8,7 @@ using Microsoft.Spark.Sql.Types;
 namespace SparkTest.NET.Converters;
 
 [ExcludeFromCodeCoverage]
-internal class SparkTimestampConverter : JsonConverter<Timestamp>
+internal sealed class SparkTimestampConverter : JsonConverter<Timestamp>
 {
     public override Timestamp? Read(
         ref Utf8JsonReader reader,

@@ -8,7 +8,7 @@ using Microsoft.Spark.Sql.Types;
 namespace SparkTest.NET.Converters;
 
 [ExcludeFromCodeCoverage]
-internal class SparkDateConverter : JsonConverter<Date>
+internal sealed class SparkDateConverter : JsonConverter<Date>
 {
     public override Date? Read(
         ref Utf8JsonReader reader,
