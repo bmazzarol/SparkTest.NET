@@ -21,19 +21,19 @@ root
 
 ```shell
 == Parsed Logical Plan ==
-Relation [Map#592] json
+Relation [Map#1] json
 
 == Analyzed Logical Plan ==
 Map: map<string,int>
-Relation [Map#592] json
+Relation [Map#1] json
 
 == Optimized Logical Plan ==
-InMemoryRelation [Map#592], StorageLevel(disk, memory, deserialized, 1 replicas)
-   +- FileScan json [Map#592] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
+InMemoryRelation [Map#1], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [Map#1] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
 
 == Physical Plan ==
-InMemoryTableScan [Map#592]
-   +- InMemoryRelation [Map#592], StorageLevel(disk, memory, deserialized, 1 replicas)
-         +- FileScan json [Map#592] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
+InMemoryTableScan [Map#1]
+   +- InMemoryRelation [Map#1], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [Map#1] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Map:map<string,int>>
 
 ```

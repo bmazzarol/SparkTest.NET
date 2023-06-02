@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using Docfx.ResultSnippets;
 using Microsoft.Spark;
 using Microsoft.Spark.Interop.Ipc;
@@ -312,7 +313,10 @@ public static class DataFrameExtensions
         {
             ["Results"] = $"{table}\n_(top = {numRows.ToString(CultureInfo.InvariantCulture)})_",
             ["Schema"] = dataFrame.PrintSchemaString().AsFencedResult("shell"),
-            ["Plan"] = dataFrame.ExplainString().AsFencedResult("shell"),
+            ["Plan"] = dataFrame
+                .ExplainString()
+                .ReIndexExplainPlan(removeIndexes: false)
+                .AsFencedResult("shell"),
         }.AsTabResult();
     }
 
@@ -346,7 +350,47 @@ public static class DataFrameExtensions
         int truncate = 0,
         bool vertical = false
     ) =>
-        $"{dataFrame.PrintSchemaString()}\n\n(top = {numRows})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
+        $"{dataFrame.PrintSchemaString()}\n\n(top = {numRows.ToString(CultureInfo.InvariantCulture)})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
+
+    /// <summary>
+    /// Replaces the non-deterministic parts of an explain plan result
+    /// </summary>
+    /// <param name="result">result of calling explain</param>
+    /// <param name="removeIndexes">flag to indicate that indexes should be removed, not re-indexed</param>
+    /// <returns>re-indexed explain plan</returns>
+    public static string ReIndexExplainPlan(this string result, bool removeIndexes)
+    {
+        // strip out all the # index values that increment over the life of a spark session
+        var indexes = result
+            .Split('#')
+            .Select(part =>
+            {
+                var newIndex = new string(part.TakeWhile(char.IsDigit).ToArray());
+                return newIndex.Length > 0 ? $"#{newIndex}" : null;
+            })
+            .OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(_ => _, StringComparer.OrdinalIgnoreCase)
+            .Select((index, i) => (Current: index, Replacement: $"#{i + 1}"))
+            .OrderByDescending(_ => _);
+
+        // replace them with stable indexes that are scoped to the current plan
+        return indexes.Aggregate(
+            result,
+            (s, pair) =>
+            {
+                var target = $"({pair.Current})([^0-9]|$)";
+                var replace = $"{(!removeIndexes ? pair.Replacement : string.Empty)}$2";
+                return Regex.Replace(
+                    s,
+                    target,
+                    replace,
+                    RegexOptions.None,
+                    TimeSpan.FromSeconds(1)
+                );
+            }
+        );
+    }
 
     /// <summary>
     /// Returns the plans (logical and physical) with a format specified by a given explain mode

@@ -34,19 +34,19 @@ root
 
 ```shell
 == Parsed Logical Plan ==
-Relation [Byte#857,Short#858,Int#859,Long#860L,Float#861,Double#862,Decimal#863,String#864,Char#865,Bool#866,Date#867,SparkDate#868,DateTimeOffset#869,Timestamp#870,Binary#871,Enum#872] json
+Relation [Byte#1,Short#2,Int#3,Long#4L,Float#5,Double#6,Decimal#7,String#8,Char#9,Bool#10,Date#11,SparkDate#12,DateTimeOffset#13,Timestamp#14,Binary#15,Enum#16] json
 
 == Analyzed Logical Plan ==
 Byte: tinyint, Short: smallint, Int: int, Long: bigint, Float: float, Double: double, Decimal: decimal(10,0), String: string, Char: string, Bool: boolean, Date: date, SparkDate: date, DateTimeOffset: timestamp, Timestamp: timestamp, Binary: binary, Enum: string
-Relation [Byte#857,Short#858,Int#859,Long#860L,Float#861,Double#862,Decimal#863,String#864,Char#865,Bool#866,Date#867,SparkDate#868,DateTimeOffset#869,Timestamp#870,Binary#871,Enum#872] json
+Relation [Byte#1,Short#2,Int#3,Long#4L,Float#5,Double#6,Decimal#7,String#8,Char#9,Bool#10,Date#11,SparkDate#12,DateTimeOffset#13,Timestamp#14,Binary#15,Enum#16] json
 
 == Optimized Logical Plan ==
-InMemoryRelation [Byte#857, Short#858, Int#859, Long#860L, Float#861, Double#862, Decimal#863, String#864, Char#865, Bool#866, Date#867, SparkDate#868, DateTimeOffset#869, Timestamp#870, Binary#871, Enum#872], StorageLevel(disk, memory, deserialized, 1 replicas)
-   +- FileScan json [Byte#857,Short#858,Int#859,Long#860L,Float#861,Double#862,Decimal#863,String#864,Char#865,Bool#866,Date#867,SparkDate#868,DateTimeOffset#869,Timestamp#870,Binary#871,Enum#872] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
+InMemoryRelation [Byte#1, Short#2, Int#3, Long#4L, Float#5, Double#6, Decimal#7, String#8, Char#9, Bool#10, Date#11, SparkDate#12, DateTimeOffset#13, Timestamp#14, Binary#15, Enum#16], StorageLevel(disk, memory, deserialized, 1 replicas)
+   +- FileScan json [Byte#1,Short#2,Int#3,Long#4L,Float#5,Double#6,Decimal#7,String#8,Char#9,Bool#10,Date#11,SparkDate#12,DateTimeOffset#13,Timestamp#14,Binary#15,Enum#16] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
 
 == Physical Plan ==
-InMemoryTableScan [Byte#857, Short#858, Int#859, Long#860L, Float#861, Double#862, Decimal#863, String#864, Char#865, Bool#866, Date#867, SparkDate#868, DateTimeOffset#869, Timestamp#870, Binary#871, Enum#872]
-   +- InMemoryRelation [Byte#857, Short#858, Int#859, Long#860L, Float#861, Double#862, Decimal#863, String#864, Char#865, Bool#866, Date#867, SparkDate#868, DateTimeOffset#869, Timestamp#870, Binary#871, Enum#872], StorageLevel(disk, memory, deserialized, 1 replicas)
-         +- FileScan json [Byte#857,Short#858,Int#859,Long#860L,Float#861,Double#862,Decimal#863,String#864,Char#865,Bool#866,Date#867,SparkDate#868,DateTimeOffset#869,Timestamp#870,Binary#871,Enum#872] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
+InMemoryTableScan [Byte#1, Short#2, Int#3, Long#4L, Float#5, Double#6, Decimal#7, String#8, Char#9, Bool#10, Date#11, SparkDate#12, DateTimeOffset#13, Timestamp#14, Binary#15, Enum#16]
+   +- InMemoryRelation [Byte#1, Short#2, Int#3, Long#4L, Float#5, Double#6, Decimal#7, String#8, Char#9, Bool#10, Date#11, SparkDate#12, DateTimeOffset#13, Timestamp#14, Binary#15, Enum#16], StorageLevel(disk, memory, deserialized, 1 replicas)
+         +- FileScan json [Byte#1,Short#2,Int#3,Long#4L,Float#5,Double#6,Decimal#7,String#8,Char#9,Bool#10,Date#11,SparkDate#12,DateTimeOffset#13,Timestamp#14,Binary#15,Enum#16] Batched: false, DataFilters: [], Format: JSON, Location: InMemoryFileIndex(1 paths)[file:/SparkTest.NE..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Byte:tinyint,Short:smallint,Int:int,Long:bigint,Float:float,Double:double,Decimal:decimal(...
 
 ```
