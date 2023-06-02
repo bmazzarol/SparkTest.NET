@@ -200,5 +200,17 @@ namespace SparkTest.NET.Tests
                 })
                 .Act(df => df.Debug())
                 .AssertResultIsUnchanged();
+
+        [Fact(DisplayName = "Explain plan indexes can be removed")]
+        public static async Task Case7() =>
+            await ArrangeUsingSpark(
+                    s =>
+                        s.CreateDataFrameFromData(
+                            new { Id = 1 },
+                            Enumerable.Range(2, 9).Select(i => new { Id = i }).ToArray()
+                        )
+                )
+                .Act(df => df.ExplainString().ReIndexExplainPlan(true))
+                .Assert(ep => ep.Should().NotContain("#"));
     }
 }

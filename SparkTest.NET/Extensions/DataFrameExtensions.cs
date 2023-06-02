@@ -371,7 +371,13 @@ public static class DataFrameExtensions
             .OfType<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(_ => _, StringComparer.OrdinalIgnoreCase)
-            .Select((index, i) => (Current: index, Replacement: $"#{i + 1}"))
+            .Select(
+                (index, i) =>
+                    (
+                        Current: index,
+                        Replacement: $"#{(i + 1).ToString(CultureInfo.InvariantCulture)}"
+                    )
+            )
             .OrderByDescending(_ => _);
 
         // replace them with stable indexes that are scoped to the current plan
