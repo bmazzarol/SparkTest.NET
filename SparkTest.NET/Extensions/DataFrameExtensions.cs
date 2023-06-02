@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using Docfx.ResultSnippets;
 using Microsoft.Spark;
 using Microsoft.Spark.Interop.Ipc;
 using Microsoft.Spark.Sql;
@@ -41,6 +44,12 @@ public static class DataFrameExtensions
                 && typeof(IEnumerable).IsAssignableFrom(x)
                 && x.GenericTypeArguments.Length == 1
         );
+
+        enumerableInterface =
+            enumerableInterface == null && typeof(IEnumerable).IsAssignableFrom(type)
+                ? type
+                : enumerableInterface;
+
         if (enumerableInterface == null)
         {
             nestedType = null;
@@ -131,7 +140,7 @@ public static class DataFrameExtensions
     /// </summary>
     /// <typeparam name="T">some T</typeparam>
     /// <returns>struct type</returns>
-    /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
+    /// <exception cref="NotSupportedException">if the type is not supported in spark</exception>
     [Pure]
     public static StructType CreateStructType<T>()
         where T : class => typeof(T).AsStructType();
@@ -142,7 +151,7 @@ public static class DataFrameExtensions
     /// <param name="_">instance of T</param>
     /// <typeparam name="T">some T</typeparam>
     /// <returns>struct type</returns>
-    /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
+    /// <exception cref="NotSupportedException">if the type is not supported in spark</exception>
     [Pure]
     public static StructType AsStructType<T>(this T _)
         where T : class => CreateStructType<T>();
@@ -194,7 +203,7 @@ public static class DataFrameExtensions
     /// <param name="rest">other data items</param>
     /// <typeparam name="TData">some TData reference type</typeparam>
     /// <returns>dataframe</returns>
-    /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
+    /// <exception cref="NotSupportedException">if the type is not supported in spark</exception>
     [Pure]
     public static DataFrame CreateDataFrameFromData<TData>(
         this SparkSession session,
@@ -210,7 +219,7 @@ public static class DataFrameExtensions
     /// <param name="data">data</param>
     /// <typeparam name="TData">some TData reference type</typeparam>
     /// <returns>dataframe</returns>
-    /// <exception cref="NotSupportedException">if the type is not supported in spark, or not serializable but supported in Spark</exception>
+    /// <exception cref="NotSupportedException">if the type is not supported in spark</exception>
     /// <exception cref="InvalidOperationException">if the enumerable is empty</exception>
     [Pure]
     public static DataFrame CreateDataFrameFromData<TData>(
@@ -270,6 +279,48 @@ public static class DataFrameExtensions
     ) => (string)dataFrame.Reference.Invoke("showString", numRows, truncate, vertical);
 
     /// <summary>
+    /// Displays rows of the `DataFrame` in tabular form in common mark format
+    /// </summary>
+    /// <remarks>Used to include `DataFrame` results in markdown documentation</remarks>
+    /// <param name="dataFrame">`DataFrame`</param>
+    /// <param name="numRows">number of rows to show</param>
+    /// <param name="truncate">
+    /// if set to more than 0, truncates strings to `truncate`
+    /// characters and all cells will be aligned right
+    /// </param>
+    /// <param name="vertical">
+    /// If set to true, prints output rows vertically
+    /// (one line per column value)
+    /// </param>
+    /// <returns>row data in markdown format</returns>
+    [Since("2.4.0")]
+    public static string ShowMdString(
+        this DataFrame dataFrame,
+        int numRows = 20,
+        int truncate = 0,
+        bool vertical = false
+    )
+    {
+        var sparkTabularFormat = dataFrame.ShowString(numRows, truncate, vertical);
+        var parts = sparkTabularFormat.Split('\n');
+        parts[2] = parts[2].Replace('+', '|');
+        var table = parts
+            .Skip(1)
+            .Take(parts.Length - 3)
+            .Aggregate(string.Empty, (s, s1) => $"{s}{s1}\n");
+
+        return new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Results"] = $"{table}\n_(top = {numRows.ToString(CultureInfo.InvariantCulture)})_",
+            ["Schema"] = dataFrame.PrintSchemaString().AsFencedResult("shell"),
+            ["Plan"] = dataFrame
+                .ExplainString()
+                .ReIndexExplainPlan(removeIndexes: false)
+                .AsFencedResult("shell"),
+        }.AsTabResult();
+    }
+
+    /// <summary>
     /// Prints the schema to the console in a nice tree format
     /// </summary>
     /// <param name="dataFrame">`DataFrame`</param>
@@ -299,5 +350,73 @@ public static class DataFrameExtensions
         int truncate = 0,
         bool vertical = false
     ) =>
-        $"{dataFrame.PrintSchemaString()}\n\n(top = {numRows})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
+        $"{dataFrame.PrintSchemaString()}\n\n(top = {numRows.ToString(CultureInfo.InvariantCulture)})\n{dataFrame.ShowString(numRows, truncate, vertical)}";
+
+    /// <summary>
+    /// Replaces the non-deterministic parts of an explain plan result
+    /// </summary>
+    /// <param name="result">result of calling explain</param>
+    /// <param name="removeIndexes">flag to indicate that indexes should be removed, not re-indexed</param>
+    /// <returns>re-indexed explain plan</returns>
+    public static string ReIndexExplainPlan(this string result, bool removeIndexes)
+    {
+        // strip out all the # index values that increment over the life of a spark session
+        var indexes = result
+            .Split('#')
+            .Select(part =>
+            {
+                var newIndex = new string(part.TakeWhile(char.IsDigit).ToArray());
+                return newIndex.Length > 0 ? $"#{newIndex}" : null;
+            })
+            .OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(_ => _, StringComparer.OrdinalIgnoreCase)
+            .Select(
+                (index, i) =>
+                    (
+                        Current: index,
+                        Replacement: $"#{(i + 1).ToString(CultureInfo.InvariantCulture)}"
+                    )
+            )
+            .OrderByDescending(_ => _);
+
+        // replace them with stable indexes that are scoped to the current plan
+        return indexes.Aggregate(
+            result,
+            (s, pair) =>
+            {
+                var target = $"({pair.Current})([^0-9]|$)";
+                var replace = $"{(!removeIndexes ? pair.Replacement : string.Empty)}$2";
+                return Regex.Replace(
+                    s,
+                    target,
+                    replace,
+                    RegexOptions.None,
+                    TimeSpan.FromSeconds(1)
+                );
+            }
+        );
+    }
+
+    /// <summary>
+    /// Returns the plans (logical and physical) with a format specified by a given explain mode
+    /// </summary>
+    /// <param name="dataFrame">data frame</param>
+    internal static string ExplainString(this DataFrame dataFrame)
+    {
+        var plan = (string)
+            ((JvmObjectReference)dataFrame.Reference.Invoke("queryExecution")).Invoke(
+                "explainString",
+                (JvmObjectReference)
+                    dataFrame.Reference.Jvm.CallStaticJavaMethod(
+                        "org.apache.spark.sql.execution.ExplainMode",
+                        "fromString",
+                        "extended"
+                    )
+            );
+        var parts = Directory
+            .GetCurrentDirectory()
+            .Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return parts.Aggregate(plan, (p, pathPart) => p.Replace($"{pathPart}/", string.Empty));
+    }
 }

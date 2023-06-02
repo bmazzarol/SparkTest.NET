@@ -109,4 +109,4 @@ For more details/information have a look the test projects or create an issue.
 
 ## Attributions
 
-[Fire icons created by juicy_fish](https://www.flaticon.com/free-icons/fire)
+[icons created by juicy_fish](https://www.flaticon.com/free-icons/test-tubes)

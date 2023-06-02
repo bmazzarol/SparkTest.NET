@@ -1,0 +1,12 @@
+items:
+  - name: About
+    href: index.md
+  - name: Getting Started
+    href: articles/getting-started.md
+  - name: Configuration
+    href: articles/configuration.md
+  - name: Create Test Dataframes
+    href: articles/test-dataframes.md
+  - name: .NET API Docs
+    href: api/toc.yml
+    expanded: true

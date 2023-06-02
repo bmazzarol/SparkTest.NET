@@ -9,20 +9,37 @@ using SparkTest.NET.Extensions;
 using VerifyXunit;
 using Xunit;
 using static SparkTest.NET.Tests.Shared;
+using static SparkTest.NET.SparkSessionFactory;
 
 namespace SparkTest.NET.Tests
 {
     [UsesVerify]
     public static class SparkSessionFactoryTests
     {
+        #region ExampleUseSession
+
+        [Fact(DisplayName = "Example usage of UseSession")]
+        public static void Example()
+        {
+            var result = UseSession(s => s.CreateDataFrameFromData(new { Id = 3 }).Collect());
+            result.Should().HaveCount(1);
+            result.First()[0].Should().Be(3);
+        }
+
+        #endregion
+
         [Fact(DisplayName = "A spark session can be returned and used to query")]
         public static async Task Case1() =>
             await ArrangeUsingSpark(
                     s =>
+                        #region CreateDataFrameFromDataFirstRestExample
+
                         s.CreateDataFrameFromData(
                             new { Id = 1 },
                             Enumerable.Range(2, 9).Select(i => new { Id = i }).ToArray()
                         )
+                        #endregion
+
                 )
                 .Act(df => df.Collect())
                 .Assert(c => c.Count() == 10);
@@ -104,7 +121,16 @@ namespace SparkTest.NET.Tests
 
         [Fact(DisplayName = "Empty data frame returns a single empty row")]
         public static async Task Case8() =>
-            await ArrangeUsingSpark(s => s.CreateEmptyFrame())
+            await ArrangeUsingSpark(s =>
+                {
+                    #region EmptyDataFrame
+
+                    var df = s.CreateEmptyFrame();
+
+                    #endregion
+
+                    return df;
+                })
                 .Act(df => df.Collect().ToList())
                 .Assert(rows =>
                 {
