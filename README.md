@@ -5,8 +5,6 @@
 
 # SparkTest.NET
 
----
-
 [:running: **_Getting Started_**](https://bmazzarol.github.io/SparkTest.NET/articles/getting-started.html)
 [:books: **_Documentation_**](https://bmazzarol.github.io/SparkTest.NET)
 
@@ -18,8 +16,6 @@
 [![CodeQL](https://github.com/bmazzarol/SparkTest.NET/actions/workflows/codeql.yml/badge.svg)](https://github.com/bmazzarol/SparkTest.NET/actions/workflows/codeql.yml)
 
 Support for testing :test_tube: Spark dotnet applications
-
----
 
 </div>
 
