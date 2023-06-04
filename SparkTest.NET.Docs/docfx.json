@@ -38,6 +38,9 @@
                 ]
             }
         ],
+        "postProcessors": [
+            "ExtractSearchIndex"
+        ],
         "overwrite": [
             {
                 "files": [
@@ -47,7 +50,8 @@
         ],
         "template": [
             "default",
-            "modern"
+            "modern",
+            "template"
         ],
         "output": "_site",
         "globalMetadata": {
