@@ -212,5 +212,29 @@ namespace SparkTest.NET.Tests
                 )
                 .Act(df => df.ExplainString().ReIndexExplainPlan(true))
                 .Assert(ep => ep.Should().NotContain("#"));
+
+        [Fact(DisplayName = "ShowMdString with no selected options is an empty string")]
+        public static async Task Case8() =>
+            await ArrangeUsingSpark(
+                    s =>
+                        s.CreateDataFrameFromData(
+                            new { Id = 1 },
+                            Enumerable.Range(2, 9).Select(i => new { Id = i }).ToArray()
+                        )
+                )
+                .Act(df => df.ShowMdString(showResults: false, showPlan: false, showSchema: false))
+                .Assert(md => md.Should().BeEmpty());
+
+        [Fact(DisplayName = "ShowMdString with 1 selected option is only that option not a tab")]
+        public static async Task Case9() =>
+            await ArrangeUsingSpark(
+                    s =>
+                        s.CreateDataFrameFromData(
+                            new { Id = 1 },
+                            Enumerable.Range(2, 9).Select(i => new { Id = i }).ToArray()
+                        )
+                )
+                .Act(df => df.ShowMdString(showResults: true, showPlan: false, showSchema: false))
+                .AssertResultIsUnchanged();
     }
 }

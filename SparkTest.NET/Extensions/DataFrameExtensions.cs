@@ -297,32 +297,55 @@ public static class DataFrameExtensions
     /// If set to true, prints output rows vertically
     /// (one line per column value)
     /// </param>
+    /// <param name="showResults">flag to indicate that results should be included in the output</param>
+    /// <param name="showSchema">flag to indicate that schema should be included in the output</param>
+    /// <param name="showPlan">flag to indicate that plan should be included in the output</param>
     /// <returns>row data in markdown format</returns>
     [Since("2.4.0")]
     public static string ShowMdString(
         this DataFrame dataFrame,
         int numRows = 20,
         int truncate = 0,
-        bool vertical = false
+        bool vertical = false,
+        bool showResults = true,
+        bool showSchema = true,
+        bool showPlan = true
     )
     {
-        var sparkTabularFormat = dataFrame.ShowString(numRows, truncate, vertical);
-        var parts = sparkTabularFormat.Split('\n');
-        parts[2] = parts[2].Replace('+', '|');
-        var table = parts
-            .Skip(1)
-            .Take(parts.Length - 3)
-            .Aggregate(string.Empty, (s, s1) => $"{s}{s1}\n");
+        var tabs = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        return new Dictionary<string, string>(StringComparer.Ordinal)
+        if (showResults)
         {
-            ["Results"] = $"{table}\n_(top = {numRows.ToString(CultureInfo.InvariantCulture)})_",
-            ["Schema"] = dataFrame.PrintSchemaString().AsFencedResult("shell"),
-            ["Plan"] = dataFrame
+            var sparkTabularFormat = dataFrame.ShowString(numRows, truncate, vertical);
+            var parts = sparkTabularFormat.Split('\n');
+            parts[2] = parts[2].Replace('+', '|');
+            var table = parts
+                .Skip(1)
+                .Take(parts.Length - 3)
+                .Aggregate(string.Empty, (s, s1) => $"{s}{s1}\n");
+            tabs["Results"] =
+                $"{table}\n_(top = {numRows.ToString(CultureInfo.InvariantCulture)})_";
+        }
+
+        if (showSchema)
+        {
+            tabs["Schema"] = dataFrame.PrintSchemaString().AsFencedResult("shell");
+        }
+
+        if (showPlan)
+        {
+            tabs["Plan"] = dataFrame
                 .ExplainString()
                 .ReIndexExplainPlan(removeIndexes: false)
-                .AsFencedResult("shell"),
-        }.AsTabResult();
+                .AsFencedResult("shell");
+        }
+
+        return tabs.Count switch
+        {
+            0 => string.Empty,
+            1 => tabs.First().Value,
+            _ => tabs.AsTabResult()
+        };
     }
 
     /// <summary>
