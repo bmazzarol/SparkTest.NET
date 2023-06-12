@@ -66,7 +66,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Spark" Version="2.1.1" />
         <PackageReference Include="System.Text.Json" Version="7.0.2" />
-        <PackageReference Include="Docfx.ResultSnippets" Version="1.0.1" />
+        <PackageReference Include="Docfx.ResultSnippets" Version="1.1.0" />
     </ItemGroup>
     
     <ItemGroup>
