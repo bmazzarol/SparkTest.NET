@@ -5,10 +5,6 @@
 
 # SparkTest.NET
 
-> Due to inactivity and lack of support for [spark.NET](https://github.com/dotnet/spark)
-> this has been archived.
-> I would recommend building Spark applications in a supported language, not
-> in dotnet.
 ---
 
 [![Nuget](https://img.shields.io/nuget/v/SparkTest.NET)](https://www.nuget.org/packages/SparkTest.NET/)
@@ -19,6 +15,12 @@
 [![CodeQL](https://github.com/bmazzarol/SparkTest.NET/actions/workflows/codeql.yml/badge.svg)](https://github.com/bmazzarol/SparkTest.NET/actions/workflows/codeql.yml)
 
 Support for testing Spark .NET applications
+
+> [!IMPORTANT]
+> Due to inactivity and lack of support for [spark.NET](https://github.com/dotnet/spark)
+> this has been archived.
+> I would recommend building Spark applications in a supported language, not
+> in dotnet.
 
 ---
 
